@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 /* BioQR Register - Matching Theme Colors */
-
 :root {
   --background: 8, 15, 25;
   --foreground: 255, 255, 255;
@@ -13,7 +12,7 @@
   --muted-foreground: 148, 163, 184;
   --border: 30, 41, 59;
   --card: 15, 23, 42;
-  
+
   /* Custom gradients */
   --gradient-security: linear-gradient(135deg, rgb(59, 130, 246), rgb(34, 197, 190));
   --gradient-glass: rgba(15, 23, 42, 0.8);
@@ -22,7 +21,12 @@
 }
 
 body {
-  background: linear-gradient(135deg, rgba(var(--primary), 0.1), rgb(var(--background)), rgba(var(--accent), 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary), 0.1),
+    rgb(var(--background)),
+    rgba(var(--accent), 0.05)
+  );
   font-family: 'Poppins', sans-serif;
   display: flex;
   align-items: center;
@@ -30,7 +34,10 @@ body {
   min-height: 100vh;
   margin: 0;
   color: rgb(var(--foreground));
-  overflow: hidden;
+  
+  /* allow scrolling */
+  overflow-y: auto;   /* vertical scrollbar */
+  overflow-x: hidden; /* no horizontal scrollbar */
 }
 
 body::before {
@@ -58,20 +65,24 @@ body::before {
   margin: 35px auto;
   position: relative;
   z-index: 10;
+
+  transform: translateY(-30px); /* shifts whole box up */
 }
+
 
 .register-box {
   backdrop-filter: blur(12px);
   background: var(--gradient-glass);
   border: 1px solid rgba(var(--border), 0.3);
   border-radius: 12px;
-  padding: 34px 32px;
+  padding: 28px 24px; /* reduced */
   box-shadow: var(--shadow-glow);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px; /* reduced */
   position: relative;
   overflow: hidden;
+
 }
 
 .register-box::before {
@@ -99,7 +110,7 @@ body::before {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px; /* reduced */
   position: relative;
 }
 
@@ -148,7 +159,7 @@ body::before {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .btn::before {
@@ -174,9 +185,10 @@ body::before {
 }
 
 .toggle-link {
-  margin-top: 8px;
+  margin-top: 4px; /* reduced */
+  margin-bottom: 0;
   text-align: center;
-  font-size: 0.97rem;
+  font-size: 0.9rem; /* slightly smaller */
   color: rgb(var(--muted-foreground));
 }
 
@@ -214,56 +226,70 @@ body::before {
   .register-container {
     padding: 10px;
   }
-  
+
   .register-box {
     padding: 20px;
     gap: 12px;
     max-height: 95vh;
   }
-  
+
   .register-box h2 {
     font-size: 1.3rem;
   }
-  
+
   .form-group input {
     padding: 10px 14px;
   }
-  
+
   .btn {
     padding: 10px 14px;
+  }
+
+  .toggle-link {
+    font-size: 0.85rem;
   }
 }
 
 @media (max-height: 700px) {
   .register-box {
     max-height: 95vh;
-    padding: 20px;
-    gap: 10px;
+    padding: 16px;
+    gap: 8px;
   }
-  
+
   .register-box h2 {
     font-size: 1.3rem;
     margin-bottom: 2px;
   }
-  
+
   .form-group {
     gap: 4px;
+  }
+
+  .toggle-link {
+    font-size: 0.85rem;
+    margin-top: 2px;
   }
 }
 
 @media (max-height: 600px) {
   .register-box {
     max-height: 98vh;
-    padding: 16px;
-    gap: 8px;
+    padding: 12px;
+    gap: 6px;
   }
-  
+
   .register-box h2 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
-  
+
   .form-group input {
     padding: 8px 12px;
+  }
+
+  .toggle-link {
+    font-size: 0.8rem;
+    margin-top: 2px;
   }
 }
 
