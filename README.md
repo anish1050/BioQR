@@ -1,3 +1,5 @@
+# BioQR, A Secure File Sharing System
+
 #1. 3 MySQL Tables To Be Created -
 ```
 CREATE TABLE bioqr.users (
