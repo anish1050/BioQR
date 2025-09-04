@@ -1,6 +1,6 @@
 # BioQR, A Secure File Sharing System
 
-#1. 3 MySQL Tables To Be Created -
+# 1. 3 MySQL Tables To Be Created -
 ```
 CREATE TABLE bioqr.users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -29,4 +29,4 @@ CREATE TABLE bioqr.files (
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
-#2. Then After Cloning The Repo, Run ``npm run dev`` & ``node server.js``
+# 2. Then After Cloning The Repo, Run ``npm run dev`` & ``node server.js``
