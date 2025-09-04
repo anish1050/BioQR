@@ -1,5 +1,5 @@
 # 3 MySQL Tables To Be Created -
-
+```
 CREATE TABLE bioqr.users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
@@ -26,4 +26,4 @@ CREATE TABLE bioqr.files (
   filepath VARCHAR(500) NOT NULL,
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+```
