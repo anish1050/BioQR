@@ -27,4 +27,4 @@ CREATE TABLE bioqr.files (
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
-#2. Then Run ``npm run dev`` & ``node server.js``
+#2. Then After Cloning The Repo, Run ``npm run dev`` & ``node server.js``
