@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Dashboard | BioQR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="dashboard.css" rel="stylesheet">
+</head>
+<body>
+  <div class="sidebar">
+    <h2>BioQR</h2>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <header>
+      <h1>Welcome to your Dashboard</h1>
+      <p class="user-info">User ID: <span id="current-user-id">1</span></p>
+    </header>
+
+    <div class="upload-section">
+      <h2>Upload Your File</h2>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <div class="file-input-container">
+          <input type="file" id="fileInput" name="file" required />
+          <label for="fileInput" class="file-input-label">
+            <span>Choose File</span>
+          </label>
+        </div>
+        <input type="hidden" id="user_id" value="1" />
+        <button type="submit" id="uploadBtn">
+          <span class="btn-text">Upload</span>
+          <span class="btn-loader" style="display: none;">Uploading...</span>
+        </button>
+      </form>
+      <div id="message" class="message" style="display: none;"></div>
+    </div>
+
+    <div class="file-list">
+      <h2>Your Files</h2>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <span>Loading files...</span>
+      </div>
+      <div id="file-container"></div>
+    </div>
+
+    <div class="qr-section" id="qr-section" style="display: none;">
+      <h2>QR Code</h2>
+      <div id="qr-container"></div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let currentUserId = 1; // This would normally come from login session
+    const API_BASE = 'http://localhost:3000';
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🚀 Dashboard initialized');
+      document.getElementById('user_id').value = currentUserId;
+      document.getElementById('current-user-id').textContent = currentUserId;
+      fetchFiles();
+    });
+
+    // Enhanced file fetching with better error handling
+    async function fetchFiles() {
+      const loadingEl = document.getElementById('loading');
+      const containerEl = document.getElementById('file-container');
+      
+      try {
+        loadingEl.style.display = 'flex';
+        containerEl.innerHTML = '';
+
+        console.log('📁 Fetching files for user:', currentUserId);
+        const response = await fetch(`${API_BASE}/bioqr/files/${currentUserId}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('📁 Files received:', data);
+
+        loadingEl.style.display = 'none';
+
+        if (data.files && data.files.length > 0) {
+          data.files.forEach(file => {
+            const div = document.createElement("div");
+            div.classList.add("file-item");
+
+            let preview = "";
+            if (file.mimetype.startsWith("image/")) {
+              preview = `
+                <div class="file-preview">
+                  <img src="${file.url}" alt="${file.filename}" 
+                       style="max-width: 150px; max-height: 100px; border-radius: 8px; object-fit: cover;">
+                </div>`;
+            } else if (file.mimetype.startsWith("video/")) {
+              preview = `
+                <div class="file-preview">
+                  <video controls style="max-width: 250px; max-height: 150px;">
+                    <source src="${file.url}" type="${file.mimetype}">
+                    Your browser does not support video playback.
+                  </video>
+                </div>`;
+            } else if (file.mimetype.startsWith("audio/")) {
+              preview = `
+                <div class="file-preview">
+                  <audio controls style="width: 250px;">
+                    <source src="${file.url}" type="${file.mimetype}">
+                    Your browser does not support audio playback.
+                  </audio>
+                </div>`;
+            } else {
+              const fileExtension = file.filename.split('.').pop() || 'file';
+              preview = `
+                <div class="file-preview file-icon">
+                  <div class="file-type">${fileExtension.toUpperCase()}</div>
+                  <span class="file-name">${file.filename}</span>
+                </div>`;
+            }
+
+            div.innerHTML = `
+              <div class="file-content">
+                ${preview}
+                <div class="file-info">
+                  <h4>${file.filename}</h4>
+                  <p class="file-meta">
+                    <span class="file-size">${formatFileSize(file.size || 0)}</span>
+                    <span class="file-date">Uploaded: ${formatDate(file.uploaded_at)}</span>
+                  </p>
+                </div>
+              </div>
+              <div class="file-actions">
+                <button class="action-btn download-btn" onclick="downloadFile(${file.id})" title="Download">
+                  📥
+                </button>
+                <button class="action-btn qr-btn" onclick="generateQR(${currentUserId}, ${file.id})" title="Generate QR">
+                  📱
+                </button>
+                <button class="action-btn view-btn" onclick="viewFile('${file.url}')" title="View">
+                  👁️
+                </button>
+              </div>
+            `;
+            
+            containerEl.appendChild(div);
+          });
+        } else {
+          containerEl.innerHTML = `
+            <div class="no-files">
+              <div class="no-files-icon">📁</div>
+              <h3>No files uploaded yet</h3>
+              <p>Upload your first file using the form above!</p>
+            </div>
+          `;
+        }
+
+      } catch (error) {
+        console.error('❌ Error loading files:', error);
+        loadingEl.style.display = 'none';
+        containerEl.innerHTML = `
+          <div class="error-message">
+            <div class="error-icon">⚠️</div>
+            <h3>Error loading files</h3>
+            <p>${error.message}</p>
+            <button onclick="fetchFiles()" class="retry-btn">Try Again</button>
+          </div>
+        `;
+      }
+    }
+
+    // Enhanced file upload with progress and better error handling
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData();
+      const fileInput = document.getElementById("fileInput");
+      const userId = document.getElementById("user_id").value;
+      const messageEl = document.getElementById("message");
+      const uploadBtn = document.getElementById("uploadBtn");
+      const btnText = uploadBtn.querySelector('.btn-text');
+      const btnLoader = uploadBtn.querySelector('.btn-loader');
+
+      // Validation
+      if (!fileInput.files[0]) {
+        showMessage("Please select a file to upload.", "error");
+        return;
+      }
+
+      if (!userId) {
+        showMessage("User ID is required.", "error");
+        return;
+      }
+
+      // Check file size (10MB limit)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (fileInput.files[0].size > maxSize) {
+        showMessage("File size exceeds 10MB limit.", "error");
+        return;
+      }
+
+      formData.append("file", fileInput.files[0]);
+      formData.append("user_id", userId);
+
+      // Update button state
+      uploadBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnLoader.style.display = 'inline';
+
+      console.log('📁 Uploading file:', {
+        name: fileInput.files[0].name,
+        size: fileInput.files[0].size,
+        type: fileInput.files[0].type,
+        userId: userId
+      });
+
+      try {
+        const response = await fetch(`${API_BASE}/bioqr/files/upload`, {
+          method: "POST",
+          body: formData
+        });
+
+        console.log('📁 Upload response status:', response.status);
+        const result = await response.json();
+        console.log('📁 Upload result:', result);
+
+        if (result.success) {
+          showMessage(result.message || "File uploaded successfully!", "success");
+          fileInput.value = ""; // Clear file input
+          fetchFiles(); // Refresh file list
+        } else {
+          showMessage(result.message || "Upload failed", "error");
+        }
+
+      } catch (error) {
+        console.error('❌ Upload error:', error);
+        showMessage(`Upload failed: ${error.message}`, "error");
+      } finally {
+        // Reset button state
+        uploadBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoader.style.display = 'none';
+      }
+    });
+
+    // Utility functions
+    function showMessage(text, type) {
+      const messageEl = document.getElementById("message");
+      messageEl.textContent = text;
+      messageEl.className = `message message-${type}`;
+      messageEl.style.display = 'block';
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        messageEl.style.display = 'none';
+      }, 5000);
+    }
+
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function downloadFile(fileId) {
+      window.open(`${API_BASE}/bioqr/files/download/${fileId}`, '_blank');
+    }
+
+    function viewFile(url) {
+      window.open(url, '_blank');
+    }
+
+    async function generateQR(userId, fileId) {
+      try {
+        console.log('📱 Generating QR for file:', fileId);
+        const response = await fetch(`${API_BASE}/bioqr/generate-qr`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user_id: userId, file_id: fileId })
+        });
+
+        const result = await response.json();
+        
+        if (result.qrImage) {
+          const qrSection = document.getElementById('qr-section');
+          const qrContainer = document.getElementById('qr-container');
+          
+          qrContainer.innerHTML = `
+            <div class="qr-display">
+              <img src="${result.qrImage}" alt="QR Code" class="qr-image">
+              <p class="qr-info">
+                QR Code expires at: ${formatDate(result.expiresAt)}
+              </p>
+              <button onclick="closeQR()" class="close-qr-btn">Close</button>
+            </div>
+          `;
+          
+          qrSection.style.display = 'block';
+          qrSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          showMessage('Failed to generate QR code', 'error');
+        }
+      } catch (error) {
+        console.error('❌ QR generation error:', error);
+        showMessage('Error generating QR code', 'error');
+      }
+    }
+
+    function closeQR() {
+      document.getElementById('qr-section').style.display = 'none';
+    }
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        // Clear any stored session data
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('username');
+        // Redirect to login page
+        window.location.href = 'login.html';
+      }
+    }
+
+    // File input label update
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const label = document.querySelector('.file-input-label span');
+      if (e.target.files[0]) {
+        label.textContent = e.target.files[0].name;
+      } else {
+        label.textContent = 'Choose File';
+      }
+    });
+  </script>
+</body>
+</html>

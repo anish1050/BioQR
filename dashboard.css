@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+:root {
+  --background: 8, 15, 25;
+  --foreground: 255, 255, 255;
+  --primary: 59, 130, 246;
+  --accent: 34, 197, 190;
+  --muted-foreground: 148, 163, 184;
+  --border: 30, 41, 59;
+  --card: 15, 23, 42;
+
+  --gradient-security: linear-gradient(135deg, rgb(59, 130, 246), rgb(34, 197, 190));
+  --gradient-glass: rgba(15, 23, 42, 0.8);
+  --shadow-glow: 0 0 30px rgba(59, 130, 246, 0.3);
+  --glow-accent: 0 0 30px rgba(34, 197, 190, 0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, rgba(var(--primary), 0.1), rgb(var(--background)), rgba(var(--accent), 0.05));
+  color: rgb(var(--foreground));
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: var(--gradient-glass);
+  border-right: 1px solid rgba(var(--border), 0.4);
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-glow);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 600;
+  background: var(--gradient-security);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sidebar a, .logout-btn {
+  display: block;
+  width: 100%;
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  text-align: center;
+  color: rgb(var(--foreground));
+  background: rgba(var(--card), 0.4);
+  transition: all 0.3s ease;
+}
+
+.sidebar a:hover, .logout-btn:hover {
+  background: var(--gradient-security);
+  box-shadow: var(--glow-accent);
+}
+
+.logout-btn {
+  border: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+header h1 {
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+  background: var(--gradient-security);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Upload Section & File List */
+.upload-section, .file-list {
+  background: var(--gradient-glass);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(var(--border), 0.3);
+  box-shadow: var(--shadow-glow);
+  margin-bottom: 30px;
+}
+
+.upload-section h2, .file-list h2 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: rgb(var(--foreground));
+}
+
+.upload-section input[type="file"] {
+  margin-bottom: 15px;
+  color: rgb(var(--foreground));
+}
+
+.upload-section button {
+  background: var(--gradient-security);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.upload-section button:hover {
+  box-shadow: var(--glow-accent);
+  transform: translateY(-2px);
+}
+
+/* File List Items */
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(var(--border), 0.4);
+}
+
+.file-item:last-child {
+  border-bottom: none;
+}
+
+.file-item a {
+  color: rgb(var(--accent));
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.file-item a:hover {
+  color: rgb(var(--primary));
+  text-shadow: 0 0 6px rgba(var(--primary), 0.4);
+}
+
+.file-item span {
+  font-size: 0.85rem;
+  color: rgb(var(--muted-foreground));
+}
+
+/* File action buttons */
+.file-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  font-size: 1.4rem; /* bigger icons */
+  padding: 12px 16px; 
+  border: none;
+  border-radius: 10px;
+  background: rgba(var(--card), 0.6);
+  color: rgb(var(--foreground));
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(var(--border), 0.4);
+}
+
+.action-btn:hover {
+  background: var(--gradient-security);
+  color: white;
+  box-shadow: var(--glow-accent);
+  transform: scale(1.1);
+}
+
+.download-btn { background: rgba(34, 197, 94, 0.15); }   /* greenish hint */
+.qr-btn       { background: rgba(59, 130, 246, 0.15); }  /* blueish hint */
+.view-btn     { background: rgba(234, 179, 8, 0.15); }   /* yellowish hint */
+
+/* Make the whole User ID text black */
+.user-info {
+  color: black !important;
+  font-weight: 600;
+}
+
