@@ -1,12 +1,29 @@
-# React + Vite
+# 3 MySQL Tables To Be Created -
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CREATE TABLE bioqr.users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL, -- bcrypt hashes need up to 60 characters, 255 is safe
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-Currently, two official plugins are available:
+CREATE TABLE bioqr.qr_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token VARCHAR(64) NOT NULL,
+  user_id INT NOT NULL,
+  file_id INT NOT NULL,
+  expires_at DATETIME NOT NULL
+);
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+CREATE TABLE bioqr.files (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  mimetype VARCHAR(100) NOT NULL,
+  filepath VARCHAR(500) NOT NULL,
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
